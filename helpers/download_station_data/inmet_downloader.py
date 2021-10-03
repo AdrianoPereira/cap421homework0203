@@ -8,17 +8,7 @@ import logging
 from string import Template
 import datetime as dt
 from datetime import timedelta
-
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="[%(levelname)s] %(asctime)s - %(message)s",
-    handlers=[
-        logging.FileHandler("debug.log"),
-        logging.StreamHandler()
-    ]
-)
-
+import argparse
 
 
 def prepare_folder(function):
@@ -65,7 +55,7 @@ def download(url, filepath):
             out = out.append(pd.DataFrame(row))
         print(out)
         logging.info(f"Download complete! Saving in {filepath}...")
-        out.to_csv(filename, index=False, encoding='utf-8')
+        out.to_csv(filepath, index=False, encoding='utf-8')
         
     else:
         logging.error("Status code is not 200!")
@@ -123,9 +113,7 @@ def download_daily_conventional_station_data(state, munic, stid, start, end):
         filename = filename_tmp.substitute(**args)
         if not os.path.exists(filename):
             url = url_tmp.substitute(**args)
-            print(filename)
-            print(url)
-            print()
+            download(url, filename)
             
 
 def read_and_download_convetional_INMET_stations(start, end):
@@ -158,9 +146,44 @@ def read_and_download_convetional_INMET_stations(start, end):
         download_daily_conventional_station_data(**args)
         
         logging.info(f"{station['DC_NOME']} downloaded!")
+        
+        
+def download_individual_daily_station(state, munic, stid, start, end):
+    logging.info(f"Downloading data from {munic}")
+    download_daily_conventional_station_data(**args)
+    
+    logging.info(f"{munic} downloaded!")    
     
     
 if __name__ == "__main__":
-    read_and_download_convetional_INMET_stations('2000-01-01', '2021-01-01')
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-s', '--start', default='2000-01-01', 
+                        help="Start datetime.")
+    parser.add_argument('-e', '--end', default='2021-01-01', 
+                        help="End datetime.")
+    parser.add_argument('-m', '--munic', 
+                        help="Station location municipality.", required=True)
+    parser.add_argument('-u', '--state', help="Station location state (UF)", 
+                        required=True)
+    parser.add_argument('-i', '--stid', help="Station ID.")
+    
+    args = vars(parser.parse_args())
+    
+    
+    # print(args)    
+    logging.basicConfig(
+        level=logging.INFO,
+        format="[%(levelname)s] %(asctime)s - %(message)s",
+        handlers=[
+            logging.FileHandler(
+                f"/home/adriano/cap421homework0203/logs/" \
+                    f"{args['stid']}-{args['start']}-{args['start']}.log"
+            ),
+            logging.StreamHandler()
+        ]
+    )    
+    
+    # read_and_download_convetional_INMET_stations('2000-01-01', '2021-01-01')
+    download_individual_daily_station(**args)
 
     

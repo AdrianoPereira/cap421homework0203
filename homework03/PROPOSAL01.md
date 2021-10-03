@@ -11,14 +11,14 @@ Utilizar a MLP para fazer a previsão de uma das variáveis meteorológicas a pa
 O [Portal do INNET](https://portal.inmet.gov.br) possui diversos dados, que incluem: imagens de satélite, radar, saídas de modelos numéricos e estações meteorológicas. Nesta proposta, pretende-se utilizar os dados das estações meteorológicas, que possuem uma boa cobertura no território brasileiro, conforme mostrado na Figura [1](#cfig01).
 
 <p id="cfig01">
-<img src="https://raw.githubusercontent.com/AdrianoPereira/CAP421/main/cap421homework0203/homework03/images/stations_inmet.png" title="Estações meteorológicas do INMET" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/AdrianoPereira/CAP421/main/lectures/homework03/images/stations_inmet.png" title="Estações meteorológicas do INMET" style="width: 100%;"/>
 <span style="display: block; text-align: center;"><strong>Figura 1</strong>: Estações meteorológicas INMET.</span>
 </p>
 
 A sugestão de utilizar as estações convencionais se dá pelo fato de que, o período de dados das estações convencionais é maior e também, várias estações automáticas posseum *flags* que indicam inoperância ou problema com os dados, veja alguns exemplos na Figura [2](#cfig02). O período delimitado foi escolhido arbitrariamente, acreditando que 20 anos seja o bastante para ter um conjunto de dados suficiente para treinar um modelo de *deep learning*.
 
 <p id="cfig02">
-<img src="https://raw.githubusercontent.com/AdrianoPereira/CAP421/main/cap421homework0203/homework03/images/conventional_stations_available.png" title="Estações meteorológicas do INMET" style="width: 100%;"/>
+<img src="https://raw.githubusercontent.com/AdrianoPereira/CAP421/main/lectures/homework03/images/conventional_stations_available.png" title="Estações meteorológicas automáticas" style="width: 100%;"/>
 <span style="display: block; text-align: center;"><strong>Figura 2</strong>: Informaçoes de algumas estações meteorológicas automáticas.</span>
 </p>
 

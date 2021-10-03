@@ -12,8 +12,9 @@ from datetime import timedelta
 
 logging.basicConfig(
     level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] - %(message)s",
+    format="[%(levelname)s] %(asctime)s - %(message)s",
     handlers=[
+        logging.FileHandler("debug.log"),
         logging.StreamHandler()
     ]
 )
@@ -34,6 +35,26 @@ def prepare_folder(function):
         
 
 def download(url, filepath):
+    """
+    Function to download a CSV file.
+
+    Parameters
+    ----------
+    url : TYPE
+        DESCRIPTION.
+    filepath : TYPE
+        DESCRIPTION.
+
+    Raises
+    ------
+    Exception
+        DESCRIPTION.
+
+    Returns
+    -------
+    None.
+
+    """
     logging.info(f"Downloading {url}...")
     res = requests.get(url)
     if res.status_code == 200:
@@ -54,6 +75,27 @@ def download(url, filepath):
 
 @prepare_folder
 def download_daily_conventional_station_data(state, munic, stid, start, end):
+    """
+    Function to download data from conventional INMET stations.
+
+    Parameters
+    ----------
+    state : TYPE
+        DESCRIPTION.
+    munic : TYPE
+        DESCRIPTION.
+    stid : TYPE
+        DESCRIPTION.
+    start : TYPE
+        DESCRIPTION.
+    end : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    None.
+
+    """
     if isinstance(start, str): start = dt.datetime.strptime(start, "%Y-%m-%d")
     if isinstance(end, str): end = dt.datetime.strptime(end, "%Y-%m-%d")
     print(end-start)
@@ -86,18 +128,39 @@ def download_daily_conventional_station_data(state, munic, stid, start, end):
             print()
             
 
-filename = "/home/adriano/cap421homework0203/data/conventional_stations/PA/ITAITUBA/PA-ITAITUBA-82445-2000-01-30.csv"
-url = "https://apitempo.inmet.gov.br/estacao/2000-01-30/2000-01-30/82445"
+def read_and_download_convetional_INMET_stations(start, end):
+    """
+    Read CSV stations and download data between date interval.
 
-download(url, filename)
-            
-            
-# download_daily_conventional_station_data(state='PA', munic='ITAITUBA', 
-#                                          stid='82445', start='2000-01-01', 
-#                                          end='2000-01-31')
-    
+    Parameters
+    ----------
+    start : TYPE
+        DESCRIPTION.
+    end : TYPE
+        DESCRIPTION.
+
+    Returns
+    -------
+    None.
+
+    """
+    convs = pd.read_csv("/home/adriano/cap421homework0203/data/" \
+                        "conventional_station_catalog.csv", sep=';')
+    for i, station in convs.iterrows():
+        args = {
+            'state': station['SG_ESTADO'], 
+            'munic': station['DC_NOME'], 
+            'stid': station['CD_ESTACAO'], 
+            'start': start, 
+            'end': end
+        }
+        logging.info(f"Downloading data from {station['DC_NOME']}")
+        download_daily_conventional_station_data(**args)
         
+        logging.info(f"{station['DC_NOME']} downloaded!")
     
+    
+if __name__ == "__main__":
+    read_and_download_convetional_INMET_stations('2000-01-01', '2021-01-01')
 
-
-# req = requests.get("https://apitempo.inmet.gov.br/estacao/2021-10-01/2021-10-01/82098")
+    

@@ -9,6 +9,7 @@ from string import Template
 import datetime as dt
 from datetime import timedelta
 import argparse
+import threading
 
 
 def prepare_folder(function):
@@ -155,6 +156,55 @@ def download_individual_daily_station(state, munic, stid, start, end):
     logging.info(f"{munic} downloaded!")    
     
     
+def download_daily_stations_multithreading(state, munic, stid, start, end, 
+                                           **kw):       
+    if isinstance(start, str): start = dt.datetime.strptime(start, "%Y-%m-%d")
+    if isinstance(end, str): end = dt.datetime.strptime(end, "%Y-%m-%d")
+    print(end-start)
+    deltas = [timedelta(days=delta) for delta in range((end-start).days)]
+    
+    bpath = "/home/adriano/cap421homework0203/data/conventional_stations"
+    folder = f"{bpath}/{state}/{munic}"
+    filename_tmp = Template(
+        f"{folder}/{state}-{munic}-{stid}-$year-$month-$day.csv"
+    )
+    url_tmp = Template(
+        "https://apitempo.inmet.gov.br/estacao/$year-$month-$day/" \
+            "$year-$month-$day/$stid"
+    )           
+        
+    def execute_task(year, month, day, stid):
+        args = {'year': year[0], 'month': month[0], 'day': day[0], 
+                'stid': stid}
+        semaphore.acquire()
+        try:
+            
+            filename = filename_tmp.substitute(**args)
+            if not os.path.exists(filename):
+                url = url_tmp.substitute(**args)
+                download(url, filename)
+        except Exception as e:
+            raise Exception(f"Problem with {args}: {e}")
+        finally:
+            semaphore.release()
+            
+    try:
+        for i, delta in enumerate(deltas):
+            cdate = start+delta
+            
+            year = cdate.year, 
+            month = str(cdate.month).zfill(2), 
+            day = str(cdate.day).zfill(2),
+            stid = stid
+            
+            thread = threading.Thread(target=execute_task, 
+                                      args=(year, month, day, stid))
+            threads_queue.append(thread)
+            thread.start()
+    except Exception as e:
+        print(f"Unable to start thread: {e}")
+    
+    
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-s', '--start', default='2000-01-01', 
@@ -166,10 +216,13 @@ if __name__ == "__main__":
     parser.add_argument('-u', '--state', help="Station location state (UF)", 
                         required=True)
     parser.add_argument('-i', '--stid', help="Station ID.")
+    parser.add_argument('-t', '--threads', help='Execute parallel tasks.', default=5)
     
     args = vars(parser.parse_args())
     
-    
+    semaphore = threading.Semaphore(value=int(args['threads']))
+    threads_queue = list()
+
     # print(args)    
     logging.basicConfig(
         level=logging.INFO,
@@ -184,6 +237,7 @@ if __name__ == "__main__":
     )    
     
     # read_and_download_convetional_INMET_stations('2000-01-01', '2021-01-01')
-    download_individual_daily_station(**args)
+    # download_individual_daily_station(**args)
+    download_daily_stations_multithreading(**args)
 
     

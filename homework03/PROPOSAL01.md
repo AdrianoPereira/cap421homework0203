@@ -140,17 +140,19 @@ python helpers/download_station_data/inmet_downloader.py --start <data inicial> 
 ### 3 Metodologia
 <hr />
 
-A seguir, algumas ideis para aplicar a DNN:
-* **Ideia 01**: Para cada estação, utilizar todas as variáveis para prever uma a temperatura média diária.
+A seguir, algumas ideias para aplicar a DNN:
+* **Ideia 01**: Para cada estação escolhida, utilizar todas as variáveis para prever uma a temperatura média diária.
 
-* **Ideia 02**: Para cada estação, utilizar todas as variáveis para prever uma o acumulado de chuva diário.
+* **Ideia 02**: Para cada estação escolhida, utilizar todas as variáveis para prever uma o acumulado de chuva diário.
 
-* **Ideia 03**: Para cada estação, utilizar todas as variáveis para prever o acumulado de chuva mensal.
+* **Ideia 03**: Para cada estação escolhida, utilizar todas as variáveis para prever o acumulado de chuva mensal.
 
-* **Ideia 04**: Para cada estação, utilizar os dados dos dois primeiros horários para prever as variáveis do terceiro horário.
+* **Ideia 04**: Para cada estação escolhida, utilizar os dados dos dois primeiros horários para prever as variáveis do terceiro horário.
 
 * **Ideia 05**: Criar classes do acumulado de chuva diário e aplicar a DNN para classificação.
 
 * **Ideia 06**: Criar classes do acumulado de chuva mensal e aplicar a DNN para classificação.
+
+* **Ideia 07**: Para cada estação escolhida, classificar os dados de intensidade do vento (ex: utilizando a Escala Beaufort https://www.weather.gov/mfl/beaufort) e utilizar todas as variáveis para prever a classe/"força" do vento no "próximo horário" a partir de dois dados anteriores. 
 
 ...
